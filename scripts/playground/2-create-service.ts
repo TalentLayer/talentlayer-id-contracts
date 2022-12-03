@@ -81,6 +81,20 @@ async function main() {
   // the next service id will be 3
   const getNextServiceId = await serviceRegistry.nextServiceId()
   console.log('Next Service Id', getNextServiceId)
+
+  await serviceRegistry.connect(alice).updateServiceData(serviceId, aliceUpdateJobData)
+  const jobDataAfterUpdate = await serviceRegistry.getService(serviceId)
+  console.log('Alice updated the Job data------------------------')
+  console.log('Job Data after update', jobDataAfterUpdate)
+
+  const keywordRegistry = await ethers.getContractAt(
+    'KeywordRegistry',
+    get(network as Network, ConfigProperty.KeywordRegistry),
+  )
+
+  await keywordRegistry.linkKeywordToService("javascript", serviceId)
+  await keywordRegistry.linkKeywordToService("typescript", serviceId)
+  await keywordRegistry.linkKeywordToService("solidity", serviceId)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

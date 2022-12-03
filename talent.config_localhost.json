@@ -1,10 +1,11 @@
 {
-  "proofOfHumanityAddress": "0xfc4ad5EBb91d6d620fE32452D71909DE8f244cBd",
-  "talentLayerPlatformIdAddress": "0x05D8A2E01EB06c284ECBae607A2d0c2BE946Bf49",
-  "talentLayerIdAddress": "0x89b0d7A8B7B3c23d03c471F7c28197655c3A192B",
-  "serviceRegistryAddress": "0xC51537E03f56650C63A9Feca4cCb5a039c77c822",
-  "talentLayerReviewAddress": "0x4F8f04B675B0ef2A0AA7C8B93D4c2d5FfFCd9Ae1",
-  "talentLayerArbitratorAddress": "0x45E8F869Fd316741A9316f39bF09AD03Df88496f",
-  "talentLayerMultipleArbitrableTransactionAddress": "0x5dEcA1942678e9d6E146312e59eB135BB2da038e",
-  "simpleERC20Address": "0x6A5BF452108DA389B7B38284E871f538671Ad375"
+  "proofOfHumanityAddress": "0x9A615F343922bFBEc110fEd7950C1b67329bf6F0",
+  "talentLayerPlatformIdAddress": "0x8D1B885524271B33Fd216f1769603416666d0C5E",
+  "talentLayerIdAddress": "0xc3774fFe189dE24208329FEF622aF2C6371443f7",
+  "serviceRegistryAddress": "0xdd90CC7f4144821176D632C593dC8a5e6119A6AE",
+  "talentLayerReviewAddress": "0x60398034C9f77481BD87E62506850e6C52342727",
+  "talentLayerArbitratorAddress": "0xa72638C4b75520635Ef0B09b69154996C1A8161b",
+  "talentLayerMultipleArbitrableTransactionAddress": "0x5d4a3bbF20da0685800b8276f3C5992CeB13693A",
+  "simpleERC20Address": "0xEaF5018A8D9Ae5843FDAbf7f77f2Ecf951Bf11D3",
+  "keywordRegistryAddress": "0xfF05E3Eb365cd1b1E251031C3abE29D725B3eaf2"
 }
