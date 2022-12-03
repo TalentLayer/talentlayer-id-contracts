@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import {ITalentLayerID} from "./interfaces/ITalentLayerID.sol";
 import {ITalentLayerPlatformID} from "./interfaces/ITalentLayerPlatformID.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /**
  * @title ServiceRegistry Contract
@@ -79,7 +80,7 @@ contract ServiceRegistry is AccessControl {
     /// @notice Emitted after a new service is created
     /// @param id The service ID (incremental)
     /// @param serviceDataUri token Id to IPFS URI mapping
-    event ServiceDataCreated(uint256 id, string serviceDataUri);
+    event ServiceDataCreated(uint256 id, string serviceDataUri, uint32[8] keywordIDs);
 
     /// @notice Emitted after an seller is assigned to a service
     /// @param id The service ID
@@ -208,12 +209,13 @@ contract ServiceRegistry is AccessControl {
     function createServiceFromBuyer(
         uint256 _platformId,
         uint256 _sellerId,
-        string calldata _serviceDataUri
+        string calldata _serviceDataUri,
+        uint32[] memory keywordIDs
     ) public returns (uint256) {
         talentLayerPlatformIdContract.isValid(_platformId);
         tlId.isValid(_sellerId);
         uint256 senderId = tlId.walletOfOwner(msg.sender);
-        return _createService(Status.Filled, senderId, senderId, _sellerId, _serviceDataUri, _platformId);
+        return _createService(Status.Filled, senderId, senderId, _sellerId, _serviceDataUri, _platformId, packKeywordIDs(keywordIDs));
     }
 
     /**
@@ -225,12 +227,24 @@ contract ServiceRegistry is AccessControl {
     function createServiceFromSeller(
         uint256 _platformId,
         uint256 _buyerId,
-        string calldata _serviceDataUri
+        string calldata _serviceDataUri,
+        uint32[] memory keywordIDs
     ) public returns (uint256) {
         talentLayerPlatformIdContract.isValid(_platformId);
         tlId.isValid(_buyerId);
         uint256 senderId = tlId.walletOfOwner(msg.sender);
-        return _createService(Status.Filled, senderId, _buyerId, senderId, _serviceDataUri, _platformId);
+        return _createService(Status.Filled, senderId, _buyerId, senderId, _serviceDataUri, _platformId, packKeywordIDs(keywordIDs));
+    }
+
+//===================== KEYWORD ID PROOF OF CONCEPT FUNCTION FOR PACKING KEYWORD IDS ====================
+    function packKeywordIDs(uint32[] memory keywordIDs) private pure returns (uint32[8] memory packedKeywordIDs){
+        uint32[8] memory fixedLengthKeywordIDs;
+        
+        for(uint8 i = 0; i < 8 && i < keywordIDs.length; i++){
+            fixedLengthKeywordIDs[i] = keywordIDs[i];
+        }
+        
+        return fixedLengthKeywordIDs;
     }
 
     /**
@@ -238,10 +252,10 @@ contract ServiceRegistry is AccessControl {
      * @param _platformId platform ID on which the Service token was minted
      * @param _serviceDataUri token Id to IPFS URI mapping
      */
-    function createOpenServiceFromBuyer(uint256 _platformId, string calldata _serviceDataUri) public returns (uint256) {
+    function createOpenServiceFromBuyer(uint256 _platformId, string calldata _serviceDataUri, uint32[] memory keywordIDs) public returns (uint256) {
         talentLayerPlatformIdContract.isValid(_platformId);
         uint256 senderId = tlId.walletOfOwner(msg.sender);
-        return _createService(Status.Opened, senderId, senderId, 0, _serviceDataUri, _platformId);
+        return _createService(Status.Opened, senderId, senderId, 0, _serviceDataUri, _platformId, packKeywordIDs(keywordIDs));
     }
 
     /**
@@ -489,7 +503,8 @@ contract ServiceRegistry is AccessControl {
         uint256 _buyerId,
         uint256 _sellerId,
         string calldata _serviceDataUri,
-        uint256 _platformId
+        uint256 _platformId,
+        uint32[8] memory keywordIDs
     ) private returns (uint256) {
         require(_senderId > 0, "You should have a TalentLayerId");
         require(_sellerId != _buyerId, "Seller and buyer can't be the same");
@@ -508,7 +523,7 @@ contract ServiceRegistry is AccessControl {
 
         emit ServiceCreated(id, _buyerId, _sellerId, _senderId, _platformId);
 
-        emit ServiceDataCreated(id, _serviceDataUri);
+        emit ServiceDataCreated(id, _serviceDataUri, keywordIDs);
 
         return id;
     }

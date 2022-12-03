@@ -5,6 +5,7 @@ export enum ConfigProperty {
   MockProofOfHumanity = "proofOfHumanityAddress",
   TalentLayerID = "talentLayerIdAddress",
   ServiceRegistry = "serviceRegistryAddress",
+  KeywordRegistry = "keywordRegistryAddress",
   Reviewscontract = "talentLayerReviewAddress",
   TalentLayerArbitrator = "talentLayerArbitratorAddress",
   TalentLayerMultipleArbitrableTransaction = "talentLayerMultipleArbitrableTransactionAddress",

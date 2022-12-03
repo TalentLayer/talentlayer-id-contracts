@@ -25,8 +25,8 @@ task("mint-platform-id", "Mints platform Ids to addresses")
     const mintRole = await platformIdContract.MINT_ROLE();
     await platformIdContract.grantRole(mintRole, deployer.address);
 
-    const tx = await platformIdContract.mintForAddress(name, address);
-    await tx.wait();
+    // const tx = await platformIdContract.mintForAddress(name, address);
+    // await tx.wait();
     const platformId = await platformIdContract.getPlatformIdFromAddress(address);
     console.log(`Minted platform id: ${platformId} for address ${address}`);
   });

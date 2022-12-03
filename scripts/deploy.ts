@@ -87,6 +87,18 @@ task('deploy')
       console.log('Service Registry address:', serviceRegistry.address)
       set(network.name as any as Network, ConfigProperty.ServiceRegistry, serviceRegistry.address)
 
+      // Deploy Keyword Registry Contract
+      const KeywordRegistry = await ethers.getContractFactory('KeywordRegistry')
+      const keywordRegistry = await KeywordRegistry.deploy()
+      if (verify) {
+        await keywordRegistry.deployTransaction.wait(5)
+        await run('verify:verify', {
+          address: keywordRegistry.address,
+        })
+      }
+      console.log('Keyword Registry address:', keywordRegistry.address)
+      set(network.name as any as Network, ConfigProperty.KeywordRegistry, keywordRegistry.address)
+
       // Deploy Review contract
       const TalentLayerReview = await ethers.getContractFactory('TalentLayerReview')
       const talentLayerReviewArgs: [string, string, string, string, string] = [

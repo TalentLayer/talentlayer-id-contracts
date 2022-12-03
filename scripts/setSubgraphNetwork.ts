@@ -12,6 +12,7 @@ async function main() {
     subgraphNetwork.localhost.TalentLayerID.address = config.talentLayerIdAddress
     subgraphNetwork.localhost.TalentLayerReview.address = config.talentLayerReviewAddress
     subgraphNetwork.localhost.ServiceRegistry.address = config.serviceRegistryAddress
+    subgraphNetwork.localhost.KeywordRegistry.address = config.keywordRegistryAddress
     subgraphNetwork.localhost.TalentLayerMultipleArbitrableTransaction.address =
       config.talentLayerMultipleArbitrableTransactionAddress
     subgraphNetwork.localhost.TalentLayerPlatformID.address = config.talentLayerPlatformIdAddress
