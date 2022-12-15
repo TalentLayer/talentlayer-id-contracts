@@ -12,6 +12,9 @@ describe('TalentLayer', function () {
     carol: SignerWithAddress,
     dave: SignerWithAddress,
     eve: SignerWithAddress,
+    frank: SignerWithAddress,
+    grace: SignerWithAddress,
+    heidi: SignerWithAddress,
     ServiceRegistry: ContractFactory,
     TalentLayerID: ContractFactory,
     TalentLayerPlatformID: ContractFactory,
@@ -34,12 +37,12 @@ describe('TalentLayer', function () {
 
   before(async function () {
     // Get the Signers
-    ;[deployer, alice, bob, carol, dave, eve] = await ethers.getSigners()
+    ;[deployer, alice, bob, carol, dave, eve, frank, grace, heidi] = await ethers.getSigners()
 
     // Deploy MockProofOfHumanity
     MockProofOfHumanity = await ethers.getContractFactory('MockProofOfHumanity')
     mockProofOfHumanity = await MockProofOfHumanity.deploy()
-    mockProofOfHumanity.addSubmissionManually([alice.address, bob.address])
+    mockProofOfHumanity.addSubmissionManually([alice.address, bob.address, frank.address])
 
     // Deploy PlatformId
     TalentLayerPlatformID = await ethers.getContractFactory('TalentLayerPlatformID')
@@ -300,6 +303,44 @@ describe('TalentLayer', function () {
       // Contract balance is 0
       expect(contractBalanceAfter).to.be.equal(0)
     })
+
+    //Checks that deployer does not pay fee for minting and that the address minted does not pay anything.
+    it("Deployer can mint TalentLayerIDs with poh for free", async function () {
+      const deployerBalanceBefore = await deployer.getBalance()
+      const frankBalanceBefore = await frank.getBalance()
+
+      const tx = await talentLayerID.freeMintWithPoh('1', frank.address, 'frank')
+      const receipt = await tx.wait()
+      const gasUsed = receipt.gasUsed.mul(receipt.effectiveGasPrice)
+      const deployerBalanceAfter = await deployer.getBalance()
+      const frankBalanceAfter = await frank.getBalance()
+      
+      await expect(deployerBalanceAfter,"Deployer only pay for gas costs when minting with Poh").to.be.equal(deployerBalanceBefore.sub(gasUsed))
+      await expect(frankBalanceAfter, "Address minted for does not pay anything").to.be.equal(frankBalanceBefore)
+    })
+
+    it("Deployer can mint TalentLayerID without poh for free", async function () {
+      const deployerBalanceBefore = await deployer.getBalance()
+      const graceBalanceBefore = await grace.getBalance()
+
+      const tx = await talentLayerID.freeMint('1', grace.address, 'grace')
+      const receipt = await tx.wait()
+      const gasUsed = receipt.gasUsed.mul(receipt.effectiveGasPrice)
+      const deployerBalanceAfter = await deployer.getBalance()
+      const graceBalanceAfter = await grace.getBalance()
+      
+      await expect(deployerBalanceAfter, "Deployer only pays for gas costs when minting").to.be.equal(deployerBalanceBefore.sub(gasUsed))
+      await expect(graceBalanceAfter, "Address minted for does not pay anything").to.be.equal(graceBalanceBefore)
+    });
+
+    it("Alice can NOT mint TalentLayerIDs without paying the mint fee", async function () {
+      await expect(talentLayerID.connect(alice).freeMint('1', heidi.address, 'heidi'), "Alice tries to mint talentLayer ID for heidi for free.")
+      .to.be.revertedWith("Ownable: caller is not the owner")
+      
+      await expect(talentLayerID.connect(alice).freeMintWithPoh('1', heidi.address, 'heidi'), "Alice tries to mint talentLayer ID with poh for heidi for free")
+      .to.be.revertedWith("Ownable: caller is not the owner")
+    })
+    
   })
 
   describe('SimpleERC20 contract contract test', function () {
